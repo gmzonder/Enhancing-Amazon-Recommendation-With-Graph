@@ -1,0 +1,8 @@
+# Dataset (download from SNAP, see README)
+amazon0302.txt/
+*.txt.gz
+
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+.venv/
