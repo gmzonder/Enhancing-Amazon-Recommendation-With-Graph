@@ -26,6 +26,7 @@ As a data scientist on Amazon's recommendation team, the goal is to find product
 | 5. Central Nodes | Degree, betweenness, closeness, eigenvector centrality and HITS hubs/authorities |
 | 6. Prediction | Link prediction with Node2Vec embeddings and machine learning classifiers |
 | 7. Conclusions | Results, value for the business, limitations and future work |
+| 8. Scalability | Runtime of degree, closeness and betweenness centrality for growing subgraphs and an estimate for the full catalogue |
 
 ## Key Findings
 
