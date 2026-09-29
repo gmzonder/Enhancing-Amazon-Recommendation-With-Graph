@@ -8,7 +8,7 @@ As a data scientist on Amazon's recommendation team, the goal is to find product
 
 ## Data
 
-[Amazon0302](https://snap.stanford.edu/data/amazon0302.html) from the Stanford Network Analysis Project (SNAP): the Amazon co-purchasing network from March 2, 2003.
+[Amazon0302](https://snap.stanford.edu/data/amazon0302.html) from the [Stanford Network Analysis Project (SNAP)](https://snap.stanford.edu/data/), a free collection of large real-world network datasets: the Amazon co-purchasing network from March 2, 2003, collected by crawling Amazon's "Customers who bought this item also bought" pages.
 
 - **Nodes:** 262,111 products
 - **Edges:** 1,234,877 directed edges. An edge *i → j* means that product *j* was listed on the page of product *i* under "Customers who bought this item also bought". Amazon listed at most 5 products, so every product has an out-degree of at most 5.
@@ -43,6 +43,12 @@ As a data scientist on Amazon's recommendation team, the goal is to find product
 | *Random Forest, naive setup with leakage (not valid)* | *0.993 ± 0.002* | *0.991 ± 0.003* | *0.961 ± 0.008* |
 
 The Node2Vec models rank candidate pairs better than the heuristics, which is what a recommender needs. At the fixed threshold of 0.5 their recall is lower, because hidden edges receive lower probabilities than the edges seen during training (discussed in Tasks 6 and 7).
+
+## How the Prediction Is Evaluated
+
+Node2Vec only creates vectors for products that are in the graph it is trained on, so products outside the sample cannot be used for testing. Instead, 20 % of the known co-purchase edges are **hidden** before the embeddings are learned, and the models have to recover them. Products are never removed, only relationships, and no product loses all of its edges.
+
+**Future work – testing on real future co-purchases:** SNAP also provides later snapshots of the same network (March 12, May 5 and June 1, 2003). Training on the March 2 network and checking which predicted edges actually appear a few months later would test the model exactly as a recommender system is used in practice.
 
 ## Updates (2026)
 
