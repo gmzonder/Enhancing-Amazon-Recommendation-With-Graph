@@ -2,8 +2,6 @@
 
 Predicting which Amazon products are bought together, using network analysis and Node2Vec link prediction on the Amazon co-purchasing network.
 
-> **Status: revision in progress.** Tasks 1–5 are revised and final. In Task 6 the new, leakage-free experimental setup is in place (see [Revision](#revision)); the model training and the conclusions (Task 7) are still being updated. The model results currently shown at the end of the notebook come from the **original** setup and are too optimistic.
-
 ## The Story
 
 As a data scientist on Amazon's recommendation team, the goal is to find product pairs that are likely to be co-purchased but are not yet linked. These pairs can be used as additional "Frequently bought together" recommendations. In graph terms, this is a **link prediction** problem: predict missing edges in the product co-purchasing network.
@@ -29,26 +27,22 @@ As a data scientist on Amazon's recommendation team, the goal is to find product
 | 6. Prediction | Link prediction with Node2Vec embeddings and machine learning classifiers |
 | 7. Conclusions | Results, value for the business, limitations and future work |
 
-## Key Findings (Tasks 3–5)
+## Key Findings
 
 - **Products form tight groups.** The sample's average clustering coefficient is **0.53**, about **28 times higher** than in random graphs of the same size (0.019 ± 0.004). Transitivity is 0.44 versus 0.010. Products that are bought with the same product are very often bought with each other, which is exactly the structure link prediction can exploit.
 - **Moderate, capped degrees.** Most products have a degree of 6–8. The distribution drops off quickly and does not follow a power law. The cap of 5 recommendations per product limits the number of connections.
 - **One clear central product.** Product 8 ranks first in degree, betweenness, closeness, eigenvector centrality and authority. Other products (e.g. 18) are highly connected but only within their own product group, so they are strong recommendations only within their niche.
+- **Hidden co-purchases can be predicted well.** Node2Vec embeddings with Logistic Regression reach a ROC AUC of **0.952 ± 0.008** on hidden test edges (5 repeated splits), clearly better than the classical heuristics Common Neighbours and Adamic–Adar (≈ 0.89).
 
-## Revision
+| Model (test set, mean ± std over 5 splits) | ROC AUC | Avg. Precision | F1 |
+|---|---|---|---|
+| **Logistic Regression** (final model) | **0.952 ± 0.008** | **0.956 ± 0.008** | 0.849 ± 0.017 |
+| Random Forest | 0.942 ± 0.013 | 0.946 ± 0.020 | 0.799 ± 0.033 |
+| Common Neighbours | 0.888 ± 0.010 | 0.883 ± 0.010 | 0.869 ± 0.011 |
+| Adamic–Adar | 0.890 ± 0.010 | 0.890 ± 0.010 | 0.869 ± 0.011 |
+| *Random Forest, naive setup with leakage (not valid)* | *0.993 ± 0.002* | *0.991 ± 0.003* | *0.961 ± 0.008* |
 
-This project was originally submitted as the graph part of the portfolio exam in *Advanced Topics of Data Mining* (FH Kiel, summer term 2024). The revision addresses the grader's feedback and further issues found in a later review:
-
-| Issue | Fix |
-|---|---|
-| Node2Vec was trained on the full graph, including the test edges (information leakage) | Test and validation edges are hidden **before** any embedding is learned; the notebook prints checks that no hidden edge is left in the embedding graphs |
-| The sample kept only edges starting at products 0–199 and dropped about a third of the edges between the selected products | The sample is now the induced subgraph (979 → 1,441 edges) |
-| Degree distribution plotted with a logarithmic degree axis | Linear degree axis |
-| Random-graph comparison measured density only on the largest component; no seed | Same measurement for both graphs; seeded; mean ± standard deviation over 10 graphs |
-| Results changed between runs | Fixed node order and random seeds; two independent runs give identical results for Tasks 2–5 |
-| *In progress:* no hyperparameter optimisation, single train/test split, weak baseline | Hyperparameter search on a validation set, 5 repeated splits (mean ± std), Common Neighbours / Adamic–Adar baselines |
-
-A quick check on one split shows the effect of the leakage: with the test edges included in the Node2Vec graph, a Random Forest reaches a ROC AUC of about 0.99; without them, about 0.95.
+The Node2Vec models rank candidate pairs better than the heuristics, which is what a recommender needs. At the fixed threshold of 0.5 their recall is lower, because hidden edges receive lower probabilities than the edges seen during training (discussed in Tasks 6 and 7).
 
 ## How to Run
 
@@ -60,8 +54,12 @@ A quick check on one split shows the effect of the leakage: with the test edges 
    pip install -r requirements.txt
    ```
 3. Download [`amazon0302.txt.gz`](https://snap.stanford.edu/data/amazon0302.html), unpack it and place the file at `amazon0302.txt/Amazon0302.txt` next to the notebook.
-4. Open `Enhancing Amazon Recommendation with Graph DM.ipynb` and run all cells. Running the whole notebook takes about one minute.
+4. Open `Enhancing Amazon Recommendation with Graph DM.ipynb` and run all cells. Running the whole notebook takes about 15 minutes, most of it for the repeated prediction experiment in Task 6.
 
 ## Author
 
 Gamze Önder
+
+---
+
+<sub>This project was created as part of the course *Advanced Topics of Data Mining* by Prof. Dr. Stephan Doerfel (FH Kiel, summer term 2024). Parts of the code are based on the course materials.</sub>
