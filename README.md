@@ -44,6 +44,14 @@ As a data scientist on Amazon's recommendation team, the goal is to find product
 
 The Node2Vec models rank candidate pairs better than the heuristics, which is what a recommender needs. At the fixed threshold of 0.5 their recall is lower, because hidden edges receive lower probabilities than the edges seen during training (discussed in Tasks 6 and 7).
 
+## Updates (2026)
+
+The project was revisited and improved:
+
+- **Leakage-free evaluation:** test and validation edges are hidden before the Node2Vec embeddings are learned.
+- **More robust experiments:** hyperparameter search on a validation set, 5 repeated splits and classical link-prediction baselines.
+- **Reproducible and clearer notebook:** a more complete sample, fixed random seeds, clearer code and updated interpretations.
+
 ## How to Run
 
 1. **Python 3.12** is required: `node2vec` needs `numpy < 2`, which is not available for Python 3.13.
@@ -62,4 +70,4 @@ Gamze Önder
 
 ---
 
-<sub>This project was created as part of the course *Advanced Topics of Data Mining* by Prof. Dr. Stephan Doerfel (FH Kiel, summer term 2024). Parts of the code are based on the course materials.</sub>
+<sub>This project was created as part of the course *Advanced Topics of Data Mining* taught by Prof. Dr. Stephan Doerfel at FH Kiel (summer term 2024). The methods and parts of the code are based on his lecture notes and course materials.</sub>
